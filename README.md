@@ -139,7 +139,7 @@ By driving all resource names through a single suffix pattern that encodes org, 
 
 ## Notes
 
-- This module composes with the official Azure naming module: `source = "Azure/naming/azurerm"`.
+- This module uses the official [Azure naming module from Microsoft](https://github.com/Azure/terraform-azurerm-naming) (`source = "Azure/naming/azurerm"`) internally to compose the Azure resource names.
 - Sovereign or restricted regions aren’t included by default. If you need Azure Government or China regions, we can add a separate JSON file or a toggle.
 
 ## Contributing
