@@ -11,7 +11,7 @@
 
 output "base_suffix" {
     description = "The base prefix for Azure resource names based on the organization and environment."
-    value       = join("-", local.name_suffix)
+    value       = local.name_suffix
 }
 
 output "prefix" {
@@ -36,10 +36,10 @@ output "location" {
 
 output "location_abbreviation" {
     description = "The abbreviation for the specified Azure region."
-    value       = local.location_abbr[var.location]
+    value       = try(local.location_abbr[var.location], try(local.location_abbr[local.location_canonical], local.location_canonical))
 }
 
 output "location_secondary" {
     description = "The standardized Azure region name for the specified location."
-    value       = local.azure_region_pair[var.location]
+    value       = try(local.azure_region_pair[var.location], local.azure_region_pair[local.location_canonical])
 }
