@@ -100,6 +100,11 @@
   "Malaysia West": "maw",
   "malaysiawest": "maw",
 
+  "East US 2 EUAP": "eus2euap",
+  "eastus2euap": "eus2euap",
+  "East US STG": "eusstg",
+  "eastusstg": "eusstg",
+
   "UAE North": "uan",
   "uaenorth": "uan",
   "UAE Central": "uac",
@@ -112,4 +117,13 @@
   "southafricanorth": "san",
   "South Africa West": "saw",
   "southafricawest": "saw"
+  ,
+  "Central US EUAP": "cuseuap",
+  "centraluseuap": "cuseuap",
+  "South Central US STG": "scusstg",
+  "southcentralusstg": "scusstg",
+  "Jio India West": "jiw",
+  "jioindiawest": "jiw",
+  "Jio India Central": "jic",
+  "jioindiacentral": "jic"
 }
