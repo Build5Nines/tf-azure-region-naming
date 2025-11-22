@@ -41,29 +41,5 @@ jobs:
         with:
           terraform_version: "1.14.0"
 
-      - name: Install jq
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y jq
-
-      - name: Make test script executable
-        run: chmod +x ./tests/run-tests.sh
-
-      - name: Run unit tests
-        working-directory: ./tests
-        env:
-          TF_LOG_PATH: "$RUNNER_TEMP/terraform-debug.log"
-        run: ./run-tests.sh
-
-      - name: Print Terraform debug log (on failure)
-        if: failure()
-        run: |
-          echo "TF_LOG_PATH=${TF_LOG_PATH:-$RUNNER_TEMP/terraform-debug.log}"
-          LOG_PATH="${TF_LOG_PATH:-$RUNNER_TEMP/terraform-debug.log}"
-          if [ -f "$LOG_PATH" ]; then
-            echo "---- terraform debug log start ----"
-            sed -n '1,2000p' "$LOG_PATH" || true
-            echo "---- terraform debug log end ----"
-          else
-            echo "No terraform debug log found at $LOG_PATH"
-          fi
+      - name: Run tests
+        run: terraform test
