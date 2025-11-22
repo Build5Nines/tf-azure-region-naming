@@ -18,7 +18,15 @@ locals {
 
   # Allow consumers to override abbreviations via var.location_abbreviations.
   # `merge(default, overrides)` lets the consumer-provided entries override the defaults.
-  location_abbr = merge(local.default_location_abbr, var.location_abbreviations)
+  # Normalize override keys so consumers may provide either display names ("East US") or
+  # short programmatic names ("eastus") and still have their overrides apply. We create
+  # a canonicalized map of overrides where keys are lowercased and spaces removed, then
+  # merge it last so these canonical overrides take final precedence.
+  location_abbr = merge(
+    local.default_location_abbr,
+    var.location_abbreviations,
+    { for k, v in var.location_abbreviations : lower(replace(k, " ", "")) => v }
+  )
 
   # Canonical region short name lookup loaded from JSON
   azure_region_pair = jsondecode(file("${path.module}/data/region_pair.json"))
@@ -32,7 +40,7 @@ locals {
       ),
       "{env}", var.environment
     ),
-    "{loc}", try(local.location_abbr[var.location], try(local.location_abbr[local.location_canonical], local.location_canonical))
+    "{loc}", try(local.location_abbr[local.location_canonical], try(local.location_abbr[var.location], local.location_canonical))
   )
 }
 

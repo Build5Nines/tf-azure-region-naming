@@ -106,7 +106,7 @@ module "azure_secondary_region" {
 Two JSON files back the region logic:
 
 - `data/region_abbr.json`: Map of region name -> short abbreviation. Contains both display and programmatic keys, e.g.
-    - `"East US": "eus"`
+- `data/region_abbr.json`: Map of canonical programmatic short name -> short abbreviation. Keys are the canonical short names (lowercased, no spaces), e.g.
     - `"eastus": "eus"`
 
 - `data/region_pair.json`: Map of region name -> canonical programmatic name, e.g.
@@ -118,6 +118,8 @@ These are loaded in `main.tf` using `jsondecode(file(...))`. Because the data fi
 ## How abbreviations are chosen
 
 Abbreviations aim to be short and readable (e.g., `eastus` -> `eus`, `westeurope` -> `weu`). If a region is missing from `region_abbr.json`, the module falls back to the canonical short name (lowercased, spaces removed), so your pipeline won’t break if a new region appears before the data file is updated.
+
+Note: the module normalizes lookups for overrides and region inputs. You can provide override keys as either display names (e.g. `"East US"`) or programmatic short names (e.g. `"eastus"`) — the module will canonicalize keys (lowercase, no spaces) and prefer the canonical form when resolving abbreviations, so an override like `eastus = "east"` will apply even if you pass `var.location = "East US"`.
 
 ## Keeping regions up to date
 
@@ -166,5 +168,6 @@ module "azure_primary_region" {
 Issues and PRs are welcome. For region updates, please:
 
 - Update both `data/region_abbr.json` and `data/region_pair.json`.
-- Include both display and programmatic keys.
+    - For `data/region_abbr.json` include canonical programmatic short-name keys (e.g. `eastus`).
+    - For `data/region_pair.json` include display and programmatic keys mapping to the canonical programmatic name.
 - Add or adjust the validation list in `variables.tf` if needed.
