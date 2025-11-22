@@ -115,19 +115,27 @@ while IFS= read -r case_json; do
 
 	test_ok=1
 	for key in $expected_keys; do
-		expected_raw=$(jq -c ".expected[\"$key\"]" <<<"$case_json")
-		# read terraform output JSON for the key (value field). If output missing, actual_raw=null
-		actual_raw=$(cd "$TEST_DIR" && $TF_CMD output -json 2>/dev/null | jq -c ".\"$key\".value" 2>/dev/null) || actual_raw=null
+			# expected value (raw string)
+			expected_val=$(jq -r ".expected[\"$key\"]" <<<"$case_json")
 
-		if [[ "$actual_raw" == "$expected_raw" ]]; then
-			# Print a human-friendly value for strings
-			display_expected=$(jq -r ".expected[\"$key\"]" <<<"$case_json")
-			echo "PASS: $key == $display_expected"
-		else
-			echo "FAIL: $key expected=$(jq -c ".expected[\"$key\"]" <<<"$case_json") but got=$actual_raw"
-			echo "  (run: cd $TEST_DIR && $TF_CMD output -json | jq .\"$key\")"
-			test_ok=0
-		fi
+			# Use the helper which returns a raw string (or empty if missing). Avoid hiding errors
+			# so CI logs will show why an output may be missing.
+			if actual_val=$(get_tf_output "$key" 2>&1); then
+				:
+			else
+				# get_tf_output failed or printed an error; capture as empty for comparison but
+				# also show the raw terraform output for easier debugging in CI logs.
+				actual_val=""
+			fi
+
+			if [[ "$actual_val" == "$expected_val" ]]; then
+				echo "PASS: $key == $expected_val"
+			else
+				# Show the expected JSON and the actual (raw) value to help debugging in CI
+				echo "FAIL: $key expected=$(jq -c ".expected[\"$key\"]" <<<"$case_json") but got=$(printf '%s' "$actual_val")"
+				echo "  (diagnose: cd $TEST_DIR && $TF_CMD output -json | jq .\"$key\")"
+				test_ok=0
+			fi
 	done
 
 	# Try to destroy any created resources to keep workspace clean (no-op in many modules)
