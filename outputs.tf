@@ -16,7 +16,7 @@ output "base_suffix" {
 
 output "prefix" {
   description = "The full prefix for Azure resource names including location abbreviation."
-  value       = module.azure_name_prefix.prefix
+  value       = module.azure_name_prefix
 }
 
 output "organization" {

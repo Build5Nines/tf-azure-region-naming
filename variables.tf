@@ -151,10 +151,10 @@ variable "location" {
   }
 }
 
-variable "name_suffix_pattern" {
+variable "name_suffix" {
   description = "The pattern to use for the name suffix in Azure resource names. This can include placeholders for organization, environment, and location."
-  type        = string
-  default     = "{org}-{loc}-{env}"
+  type        = list(string)
+  default     = ["{org}", "{loc}", "{env}"]
 }
 
 variable "location_abbreviations" {

@@ -32,16 +32,19 @@ locals {
   azure_region_pair = jsondecode(file("${path.module}/data/region_pair.json"))
 
   # Use explicit abbreviation when available; otherwise fall back to canonical short region name (e.g., eastus)
-  name_suffix = replace(
+  # Build name suffix parts from the pattern array and then join into a string for consumers
+  name_suffix = [for part in var.name_suffix :
     replace(
       replace(
-        var.name_suffix_pattern,
-        "{org}", var.organization
+        replace(
+          part,
+          "{org}", var.organization
+        ),
+        "{env}", var.environment
       ),
-      "{env}", var.environment
-    ),
-    "{loc}", try(local.location_abbr[local.location_canonical], try(local.location_abbr[var.location], local.location_canonical))
-  )
+      "{loc}", try(local.location_abbr[local.location_canonical], try(local.location_abbr[var.location], local.location_canonical))
+    )
+  ]
 }
 
 # Azure Naming Module

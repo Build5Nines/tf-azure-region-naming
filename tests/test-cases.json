@@ -1,0 +1,35 @@
+[
+  {
+    "id": "basic-eastus",
+    "organization": "acme",
+    "environment": "prd",
+    "location": "East US",
+    "expected": {
+      "location_abbreviation": "eus",
+      "prefix_resource_group_name": "rg-acme-eus-prd",
+      "location_secondary": "westus"
+    }
+  },
+  {
+    "id": "canonical-eastus-short",
+    "organization": "acme",
+    "environment": "stg",
+    "location": "eastus",
+    "expected": {
+      "location_abbreviation": "eus"
+    }
+  }
+  ,
+  {
+    "id": "custom-pattern",
+    "organization": "acme",
+    "environment": "dev",
+    "location": "West US",
+    "name_suffix": ["{env}", "{org}", "{loc}"],
+    "expected": {
+      "location_abbreviation": "wus",
+      "prefix_resource_group_name": "rg-dev-acme-wus",
+      "location_secondary": "eastus"
+    }
+  }
+]
