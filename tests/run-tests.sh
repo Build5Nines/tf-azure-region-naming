@@ -118,23 +118,31 @@ while IFS= read -r case_json; do
 			# expected value (raw string)
 			expected_val=$(jq -r ".expected[\"$key\"]" <<<"$case_json")
 
-			# Use the helper which returns a raw string (or empty if missing). Avoid hiding errors
-			# so CI logs will show why an output may be missing.
-			if actual_val=$(get_tf_output "$key" 2>&1); then
-				:
-			else
-				# get_tf_output failed or printed an error; capture as empty for comparison but
-				# also show the raw terraform output for easier debugging in CI logs.
-				actual_val=""
-			fi
+			# Capture the helper output and its exit status so we can surface errors in CI logs
+			actual_val=$(get_tf_output "$key" 2>&1)
+			actual_status=$?
 
-			if [[ "$actual_val" == "$expected_val" ]]; then
-				echo "PASS: $key == $expected_val"
-			else
-				# Show the expected JSON and the actual (raw) value to help debugging in CI
-				echo "FAIL: $key expected=$(jq -c ".expected[\"$key\"]" <<<"$case_json") but got=$(printf '%s' "$actual_val")"
+			if [[ $actual_status -ne 0 ]]; then
+				# Show the helper error and the terraform apply log to help diagnostics in CI
+				echo "FAIL: $key expected=$(jq -c ".expected[\"$key\"]" <<<"$case_json") but terraform output errored"
+				echo "  terraform output error: $(printf '%s' "$actual_val")"
+				echo "  --- terraform apply log (first 200 lines) ---"
+				sed -n '1,200p' "$log_file" || true
+				echo "  --- end apply log ---"
 				echo "  (diagnose: cd $TEST_DIR && $TF_CMD output -json | jq .\"$key\")"
 				test_ok=0
+			else
+				if [[ "$actual_val" == "$expected_val" ]]; then
+					echo "PASS: $key == $expected_val"
+				else
+					echo "FAIL: $key expected=$(jq -c ".expected[\"$key\"]" <<<"$case_json") but got=$(printf '%s' \"$actual_val\")"
+					echo "  (diagnose: cd $TEST_DIR && $TF_CMD output -json | jq .\"$key\")"
+					# Also include the apply log to help CI debugging when outputs are empty
+					echo "  --- terraform apply log (first 200 lines) ---"
+					sed -n '1,200p' "$log_file" || true
+					echo "  --- end apply log ---"
+					test_ok=0
+				fi
 			fi
 	done
 
