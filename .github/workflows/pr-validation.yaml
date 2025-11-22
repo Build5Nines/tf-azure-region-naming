@@ -5,10 +5,6 @@ on: [push, pull_request, workflow_dispatch]
 env:
   ACTIONS_RUNNER_DEBUG: 'true'
   ACTIONS_STEP_DEBUG: 'true'
-  TF_LOG: 'DEBUG'
-  # TF_LOG_PATH cannot use the runner context at workflow top-level (runner.temp is not
-  # available there). Individual steps set TF_LOG_PATH using the runner-provided
-  # $RUNNER_TEMP environment variable instead.
 
 jobs:
   build:
@@ -44,21 +40,6 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: "1.14.0"
-
-      - name: Smoke Terraform logging (create TF debug file)
-        run: |
-          echo "RUNNER_TEMP=$RUNNER_TEMP"
-          echo "TF_LOG=$TF_LOG"
-          echo "TF_LOG_PATH will be: $RUNNER_TEMP/terraform-debug.log"
-          mkdir -p "$RUNNER_TEMP"
-          # Run a quick terraform command with TF logging to force the debug file to be created.
-          (cd tests/testmodule && TF_LOG=DEBUG TF_LOG_PATH="$RUNNER_TEMP/terraform-debug.log" terraform init -input=false -backend=false) || true
-          if [ -f "$RUNNER_TEMP/terraform-debug.log" ]; then
-            echo "-> terraform debug log created (first 200 lines):"
-            sed -n '1,200p' "$RUNNER_TEMP/terraform-debug.log" || true
-          else
-            echo "-> terraform debug log not created at $RUNNER_TEMP/terraform-debug.log"
-          fi
 
       - name: Install jq
         run: |
