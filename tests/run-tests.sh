@@ -19,6 +19,13 @@ if ! command -v "$TF_CMD" >/dev/null 2>&1; then
 	exit 2
 fi
 
+# Ensure TF_LOG_PATH is expanded when running on CI (runner provides RUNNER_TEMP).
+# If TF_LOG_PATH isn't set, default to $RUNNER_TEMP/terraform-debug.log on runners,
+# otherwise fall back to /tmp for local runs. Create parent dir if needed.
+LOG_PATH="${TF_LOG_PATH:-${RUNNER_TEMP:-/tmp}/terraform-debug.log}"
+export TF_LOG_PATH="$LOG_PATH"
+mkdir -p "$(dirname "$TF_LOG_PATH")" 2>/dev/null || true
+
 # Helper: run terraform init once per test directory with backend disabled (local tests)
 tf_init() {
 	(cd "$TEST_DIR" && $TF_CMD init -input=false -backend=false)
