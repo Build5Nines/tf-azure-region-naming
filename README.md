@@ -89,6 +89,8 @@ module "azure_secondary_region" {
     - `{env}` -> `var.environment`
     - `{loc}` -> Region abbreviation (e.g., `eus`, `weu`, etc.)
 
+- `location_abbreviations` (map(string), optional, default `{}`): Optional map of region -> abbreviation overrides. Use this to provide custom or alternate abbreviations for regions. Keys may be the display name (e.g. `"East US"`) or the programmatic short name (e.g. `"eastus"`). Example: `{ "eastus" = "east", "westus" = "west" }`.
+
 ## Outputs
 
 - `base_suffix` (string): The computed suffix using your pattern (e.g., `contoso-eus-prod`).
@@ -136,6 +138,23 @@ By driving all resource names through a single suffix pattern that encodes org, 
 - Ensure consistent, predictable naming across all modules and teams.
 - Make it easy to search and filter by environment and region in the Azure Portal or scripts.
 - Reduce drift by centralizing the logic in one place (this module + JSON data files).
+
+Example: override region abbreviations when you want different short codes than the defaults:
+
+```hcl
+module "azure_primary_region" {
+        source                  = "github.com/Build5Nines/tf-azure-region-naming"
+        organization            = "contoso"
+        environment             = "prod"
+        location                = "East US"
+        location_abbreviations  = {
+            eastus = "east"
+            westus = "west"
+        }
+}
+
+# The resulting `{loc}` used in `name_suffix_pattern` for `East US` will be `east` (from the override)
+```
 
 ## Notes
 

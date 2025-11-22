@@ -156,3 +156,14 @@ variable "name_suffix_pattern" {
   type        = string
   default     = "{org}-{loc}-{env}"
 }
+
+variable "location_abbreviations" {
+  description = <<EOT
+Optional map of region -> abbreviation overrides. Use this to provide custom or alternate
+abbreviations for regions. Keys may be either the display name (e.g. "East US") or the
+programmatic short name (e.g. "eastus"). Values must be the short abbreviation string.
+Example: { "eastus" = "east", "westus" = "west" }
+EOT
+  type        = map(string)
+  default     = {}
+}

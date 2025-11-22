@@ -14,7 +14,11 @@ locals {
   location_canonical = lower(replace(var.location, " ", ""))
 
   # Load region abbreviations from external JSON file
-  location_abbr = jsondecode(file("${path.module}/data/region_abbr.json"))
+  default_location_abbr = jsondecode(file("${path.module}/data/region_abbr.json"))
+
+  # Allow consumers to override abbreviations via var.location_abbreviations.
+  # `merge(default, overrides)` lets the consumer-provided entries override the defaults.
+  location_abbr = merge(local.default_location_abbr, var.location_abbreviations)
 
   # Canonical region short name lookup loaded from JSON
   azure_region_pair = jsondecode(file("${path.module}/data/region_pair.json"))
