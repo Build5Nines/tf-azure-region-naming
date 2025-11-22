@@ -28,18 +28,41 @@ tf_init() {
 # otherwise falls back to `terraform output -raw` or regular `terraform output` parsing.
 get_tf_output() {
 	local name=$1
-	(cd "$TEST_DIR" && 
-		if command -v jq >/dev/null 2>&1; then
-			$TF_CMD output -json | jq -r ".${name}.value"
-		else
-			# try -raw (modern terraform) otherwise plain output and strip quotes
-			if $TF_CMD output -help 2>&1 | grep -q -- "-raw"; then
-				$TF_CMD output -raw "$name"
-			else
-				$TF_CMD output "$name" | sed -E 's/^\s*"?(.+)"?\s*$/\1/'
-			fi
+	local out_file err_file status
+	out_file=$(mktemp -t tf-output.XXXXXX)
+	err_file=$(mktemp -t tf-output-err.XXXXXX)
+
+	# Capture terraform output JSON and stderr separately to avoid piping issues that
+	# can corrupt the stream (causes jq parse errors and EPIPE on some runners).
+	( cd "$TEST_DIR" && $TF_CMD output -json >"$out_file" 2>"$err_file" )
+	status=$?
+	if [[ $status -ne 0 ]]; then
+		# Print stderr for diagnostics and return the failure code
+		cat "$err_file" >&2 || true
+		rm -f "$out_file" "$err_file"
+		return $status
+	fi
+
+	if command -v jq >/dev/null 2>&1; then
+		# Validate JSON before parsing to give clearer errors when stdout is polluted
+		if ! jq empty "$out_file" >/dev/null 2>&1; then
+			cat "$out_file" >&2 || true
+			rm -f "$out_file" "$err_file"
+			return 6
 		fi
-	)
+		jq -r ".${name}.value" "$out_file"
+		status=$?
+		rm -f "$out_file" "$err_file"
+		return $status
+	else
+		# Fallback: try terraform output -raw (if supported) or plain output parsing
+		rm -f "$out_file" "$err_file"
+		if $TF_CMD output -help 2>&1 | grep -q -- "-raw"; then
+			( cd "$TEST_DIR" && $TF_CMD output -raw "$name" )
+		else
+			( cd "$TEST_DIR" && $TF_CMD output "$name" ) | sed -E 's/^\s*"?(.+)"?\s*$/\1/'
+		fi
+	fi
 }
 
 TEST_CASES_FILE=${TEST_CASES_FILE:-"$ROOT_DIR/tests/test-cases.json"}
