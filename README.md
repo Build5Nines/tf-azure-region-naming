@@ -72,6 +72,10 @@ Storage Account = stb59eusprodfiles
 SQL Server      = sql-b59-eus-prod-data
 ```
 
+If you're looking for some more practical example usages of this module, check out the following:
+
+- [Multi-Region Deployment with Multiple Workloads in Single Terraform Project](https://github.com/Build5Nines/terraform-quickstart-templates/blob/main/microsoft-azure/workloads/multi-region-naming/main.tf): This is an example Terraform project demonstrating how to use the `Build5Nines/naming/azure` module to deploy a multi-region deployment across 2 Azure Regions (Primary and Secondary Region Pair) that includes Azure resources for multiple workloads within a single Terraform project.
+
 ---
 ## Accessing Resource Names
 
