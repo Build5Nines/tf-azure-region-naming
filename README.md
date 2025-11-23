@@ -1,4 +1,4 @@
-# Azure Region Naming Terraform Module from Build5Nines
+# Build5Nines Azure Naming Terraform Module
 
 [![Unit Tests](https://github.com/Build5Nines/terraform-azurerm-region-naming/actions/workflows/unit-tests.yaml/badge.svg)](https://github.com/Build5Nines/terraform-azurerm-region-naming/actions/workflows/unit-tests.yaml)
 
@@ -34,7 +34,7 @@ Basic usage in your root module:
 
 ```hcl
 module "azure_primary_region" {
-    source       = "github.com/Build5Nines/tf-azure-region-naming"
+    source       = "github.com/Build5Nines/terraform-azure-naming"
     organization = "contoso"
     environment  = "prod"
     location     = "East US" # or "eastus"
@@ -51,7 +51,7 @@ Override the suffix pattern:
 
 ```hcl
 module "azure_primary_region" {
-    source             = "github.com/Build5Nines/tf-azure-region-naming"
+    source             = "github.com/Build5Nines/terraform-azure-naming"
     organization       = "contoso"
     environment        = "dev"
     location           = "westeurope"
@@ -63,7 +63,7 @@ Use programmatic region names everywhere (also supported):
 
 ```hcl
 module "azure_primary_region" {
-    source       = "github.com/Build5Nines/tf-azure-region-naming"
+    source       = "github.com/Build5Nines/terraform-azure-naming"
     organization = "contoso"
     environment  = "stage"
     location     = "japaneast"
@@ -74,7 +74,7 @@ Optional: define a secondary region using a second module instance that automati
 
 ```hcl
 module "azure_secondary_region" {
-    source       = "github.com/Build5Nines/tf-azure-region-naming"
+    source       = "github.com/Build5Nines/terraform-azure-naming"
     organizaton = module.azure_primary_region.organization
     environment = module.azure_primary_region.environment
     location    = module.azure_primary_region.secondary_location
@@ -147,7 +147,7 @@ Example: override region abbreviations when you want different short codes than 
 
 ```hcl
 module "azure_primary_region" {
-        source                  = "github.com/Build5Nines/tf-azure-region-naming"
+        source                  = "github.com/Build5Nines/terraform-azure-naming"
         organization            = "contoso"
         environment             = "prod"
         location                = "East US"
