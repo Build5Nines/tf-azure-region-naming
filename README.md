@@ -25,7 +25,7 @@ It then passes that suffix to the upstream Azure naming module so you can access
 ## Quick Start
 
 ```hcl
-module "naming_primary" {
+module "azure_primary" {
     source        = "Build5Nines/naming/azurerm"
     organization  = "b59"
     environment   = "prod"
@@ -33,8 +33,8 @@ module "naming_primary" {
 }
 
 resource "azurerm_resource_group" "main" {
-    name     = module.naming_primary.prefix.resource_group.name
-    location = module.naming_primary.location
+    name     = module.azure_primary.resources.resource_group.name
+    location = module.azure_primary.location
 }
 ```
 
@@ -49,7 +49,7 @@ This naming pattern enables the use of this module to more easily adhere to a de
 ```hcl
 
 resource "azurerm_storage_account" "files" {
-  name                     = "${module.naming_primary.prefix.storage_account.name}files"
+  name                     = "${module.azure_primary.resources.storage_account.name}files"
   resource_group_name      = azurerm_resource_group.main.name
   location                 = azurerm_resource_group.main.location
   account_tier             = "Standard"
@@ -57,7 +57,7 @@ resource "azurerm_storage_account" "files" {
 }
 
 resource "azurerm_sql_server" "sql_data" {
-  name                         = "${module.naming_primary.prefix.sql_server.name}-data"
+  name                         = "${module.azure_primary.resources.sql_server.name}-data"
   resource_group_name          = azurerm_resource_group.main.name
   location                     = azurerm_resource_group.main.location
   version                      = "12.0"
@@ -75,7 +75,7 @@ SQL Server      = sql-b59-eus-prod-data
 ---
 ## Accessing Resource Names
 
-The `prefix` output is an entire instantiated module object from `Azure/naming/azurerm`, not just a string. This means that the `prefix` output has properties for each [Azure Resource type](https://github.com/Azure/terraform-azurerm-naming/blob/master/README.md#outputs). Each resource (e.g. `.prefix.app_service`) is an object with additional properties for that Azure Resource type:
+The `prefix` output is an entire instantiated module object from `Azure/naming/azurerm`, not just a string. This means that the `prefix` output has properties for each [Azure Resource type](https://github.com/Azure/terraform-azurerm-naming/blob/master/README.md#outputs). Each resource (e.g. `.resources.app_service`) is an object with additional properties for that Azure Resource type:
 
 | Property       | Description |
 |----------------|-------------|
@@ -93,18 +93,18 @@ Example usages:
 ```hcl
 # Storage Account
 resource "azurerm_storage_account" "sa" {
-    name                     = module.naming_primary.prefix.storage_account.name
+    name                     = module.azure_primary.resources.storage_account.name
     resource_group_name      = azurerm_resource_group.main.name
-    location                 = module.naming_primary.location
+    location                 = module.azure_primary.location
     account_tier             = "Standard"
     account_replication_type = "LRS"
 }
 
 # Unique variation (if collision risk)
 resource "azurerm_key_vault" "kv" {
-    name                = module.naming_primary.prefix.key_vault.name_unique
+    name                = module.azure_primary.resources.key_vault.name_unique
     resource_group_name = azurerm_resource_group.main.name
-    location            = module.naming_primary.location
+    location            = module.azure_primary.location
     tenant_id           = data.azurerm_client_config.current.tenant_id
     sku_name            = "standard"
 }
@@ -116,11 +116,11 @@ resource "azurerm_key_vault" "kv" {
 `location_secondary` exposes the paired (or canonicalized) region derived from `data/region_pair.json`. Use it to instantiate a second module instance for DR / HA scenarios:
 
 ```hcl
-module "naming_secondary" {
+module "azure_secondary" {
     source       = "Build5Nines/naming/azurerm"
-    organization = module.naming_primary.organization
-    environment  = module.naming_primary.environment
-    location     = module.naming_primary.location_secondary
+    organization = module.azure_primary.organization
+    environment  = module.azure_primary.environment
+    location     = module.azure_primary.location_secondary
 }
 ```
 
@@ -136,7 +136,7 @@ name_suffix = ["{org}", "{loc}", "{env}"]
 You can rearrange or add static parts:
 
 ```hcl
-module "naming_primary" {
+module "azure_primary" {
     source        = "Build5Nines/naming/azurerm"
     organization  = "b59"
     environment   = "dev"
@@ -150,7 +150,7 @@ module "naming_primary" {
 Override region abbreviations:
 
 ```hcl
-module "naming_primary" {
+module "azure_primary" {
     source        = "Build5Nines/naming/azurerm"
     organization  = "b59"
     environment   = "prod"
@@ -167,7 +167,7 @@ module "naming_primary" {
 Override the secondary location by setting a custom secondary region on the primary module:
 
 ```hcl
-module "naming_primary" {
+module "azure_primary" {
     source              = "Build5Nines/naming/azurerm"
     organization        = "b59"
     environment         = "prod"
@@ -175,7 +175,7 @@ module "naming_primary" {
     location_secondary  = "North Central US  # or "northcentralus"
 }
 
-# Now module.naming_primary.location_secondary == "North Central US"
+# Now module.azure_primary.location_secondary == "North Central US"
 ```
 
 By default, the module will lookup the Microsoft Region Pair to return for the `location_secondary` output from the module. By setting the `location_secondary` explicitly, you can override this behavior by setting the secondary location needed for your own disaster recovery plans.
@@ -210,8 +210,8 @@ By default, the module will lookup the Microsoft Region Pair to return for the `
 Example referencing an output:
 ```hcl
 locals {
-    rg_name     = module.naming_primary.prefix.resource_group.name
-    storage_slug = module.naming_primary.prefix.storage_account.slug  # "st"
+    rg_name     = module.azure_primary.resources.resource_group.name
+    storage_slug = module.azure_primary.resources.storage_account.slug  # "st"
 }
 ```
 
@@ -234,7 +234,7 @@ locals {
 * Use `name_unique` for resources that require globally unique naming (storage accounts, key vaults, etc.).
 * Derive secondary region infra with `location_secondary`.
 * Compose additional naming layers by appending static literals in `name_suffix` (e.g. add a workload slug `{org}-{loc}-{env}-app`).
-* Inspect constraints before naming collisions: `module.naming_primary.prefix.storage_account.max_length`.
+* Inspect constraints before naming collisions: `module.azure_primary.resources.storage_account.max_length`.
 
 ---
 ## Region Data Files
@@ -269,28 +269,28 @@ This module wraps and extends the Microsoft `Azure/naming/azurerm` module, addin
 ---
 ## Example: Multi‑Region Deployment
 ```hcl
-module "naming_primary" {
+module "azure_primary" {
     source       = "Build5Nines/naming/azurerm"
     organization = "b59"
     environment  = "prod"
     location     = "East US"
 }
 
-module "naming_secondary" {
+module "azure_secondary" {
     source       = "Build5Nines/naming/azurerm"
-    organization = module.naming_primary.organization
-    environment  = module.naming_primary.environment
-    location     = module.naming_primary.location_secondary
+    organization = module.azure_primary.organization
+    environment  = module.azure_primary.environment
+    location     = module.azure_primary.location_secondary
 }
 
 resource "azurerm_resource_group" "primary" {
-    name     = module.naming_primary.prefix.resource_group.name
-    location = module.naming_primary.location
+    name     = module.azure_primary.resources.resource_group.name
+    location = module.azure_primary.location
 }
 
 resource "azurerm_resource_group" "secondary" {
-    name     = module.naming_secondary.prefix.resource_group.name
-    location = module.naming_secondary.location
+    name     = module.azure_secondary.resources.resource_group.name
+    location = module.azure_secondary.location
 }
 ```
 

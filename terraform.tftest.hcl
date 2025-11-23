@@ -24,17 +24,17 @@ run "basic-eastus" {
   }
 
   assert {
-    condition     = output.prefix.resource_group.name == "rg-acme-eus-prd"
+    condition     = output.resources.resource_group.name == "rg-acme-eus-prd"
     error_message = "prefix_resource_group_name did not match expected"
   }
 
   assert {
-    condition     = output.prefix.storage_account.name == "stacmeeusprd"
+    condition     = output.resources.storage_account.name == "stacmeeusprd"
     error_message = "prefix.storage_account.name did not match expected"
   }
 
   assert {
-    condition     = output.prefix.sql_server.name == "sql-acme-eus-prd"
+    condition     = output.resources.sql_server.name == "sql-acme-eus-prd"
     error_message = "prefix.sql_server.name did not match expected"
   }
 
@@ -65,7 +65,7 @@ run "canonical-eastus-short" {
   }
 
   assert {
-    condition     = output.prefix.resource_group.name == "rg-acme-eus-stg"
+    condition     = output.resources.resource_group.name == "rg-acme-eus-stg"
     error_message = "prefix_resource_group_name did not match expected"
   }
 }
@@ -87,7 +87,7 @@ run "custom-pattern" {
   }
 
   assert {
-    condition     = output.prefix.resource_group.name == "rg-dev-acme-wus"
+    condition     = output.resources.resource_group.name == "rg-dev-acme-wus"
     error_message = "prefix_resource_group_name did not match expected"
   }
 
@@ -114,7 +114,7 @@ run "custom-pattern-with-ending-name" {
   }
 
   assert {
-    condition     = output.prefix.resource_group.name == "rg-dev-acme-ncus-data"
+    condition     = output.resources.resource_group.name == "rg-dev-acme-ncus-data"
     error_message = "prefix_resource_group_name did not match expected"
   }
 
@@ -140,7 +140,7 @@ run "no-organization-01" {
   }
 
   assert {
-    condition     = output.prefix.resource_group.name == "rg-dev-ncus-data"
+    condition     = output.resources.resource_group.name == "rg-dev-ncus-data"
     error_message = "prefix_resource_group_name did not match expected"
   }
 
@@ -165,7 +165,7 @@ run "no-environment-01" {
   }
 
   assert {
-    condition     = output.prefix.resource_group.name == "rg-ncus-data"
+    condition     = output.resources.resource_group.name == "rg-ncus-data"
     error_message = "prefix_resource_group_name did not match expected"
   }
 
@@ -194,7 +194,7 @@ run "custom-location-abbreviation-01" {
   }
 
   assert {
-    condition     = output.prefix.resource_group.name == "rg-acme-east-prd"
+    condition     = output.resources.resource_group.name == "rg-acme-east-prd"
     error_message = "prefix_resource_group_name did not match expected"
   }
 
@@ -222,7 +222,7 @@ run "custom-location-abbreviation-02" {
   }
 
   assert {
-    condition     = output.prefix.resource_group.name == "rg-acme-east-prd"
+    condition     = output.resources.resource_group.name == "rg-acme-east-prd"
     error_message = "prefix_resource_group_name did not match expected"
   }
 
@@ -250,7 +250,7 @@ run "custom-location-abbreviation-03" {
   }
 
   assert {
-    condition     = output.prefix.resource_group.name == "rg-acme-east-prd"
+    condition     = output.resources.resource_group.name == "rg-acme-east-prd"
     error_message = "prefix_resource_group_name did not match expected"
   }
 
@@ -276,7 +276,7 @@ run "custom-secondary-location" {
   }
 
   assert {
-    condition     = output.prefix.resource_group.name == "rg-acme-eus-prd"
+    condition     = output.resources.resource_group.name == "rg-acme-eus-prd"
     error_message = "prefix_resource_group_name did not match expected"
   }
 

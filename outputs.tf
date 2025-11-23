@@ -14,23 +14,23 @@ output "base_suffix" {
   value       = local.name_suffix
 }
 
-output "prefix" {
-  description = "The full prefix for Azure resource names including location abbreviation."
-  value       = module.azure_name_prefix
+output "resources" {
+  description = "The Azure resources with names that match the naming convention defined."
+  value       = module.azure_naming
 }
 
 output "organization" {
-  description = "The organization name part used in the naming convention."
+  description = "The organization name part used in the naming convention defined."
   value       = var.organization
 }
 
 output "environment" {
-  description = "The environment name part used in the naming convention."
+  description = "The environment name part used in the naming convention defined."
   value       = var.environment
 }
 
 output "location" {
-  description = "The Azure Region used in the naming convention."
+  description = "The Azure Region used in the naming convention defined."
   value       = var.location
 }
 

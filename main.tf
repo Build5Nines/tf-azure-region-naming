@@ -49,7 +49,7 @@ locals {
 
 # Azure Naming Module
 # https://github.com/Azure/terraform-azurerm-naming
-module "azure_name_prefix" {
+module "azure_naming" {
   source = "Azure/naming/azurerm"
   suffix = local.name_suffix
 }
