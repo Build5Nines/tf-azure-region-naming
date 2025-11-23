@@ -40,14 +40,14 @@ resource "azurerm_resource_group" "main" {
 
 Resulting resource group name pattern (example):
 ```
-b59-eus-prod-rg
+rg-b59-eus-prod
 ```
 (`rg` is applied internally by the upstream module as the slug for a resource group.)
 
 ---
 ## Accessing Resource Names
 
-The `prefix` output is an entire instantiated module object from `Azure/naming/azurerm`, not just a string. Each supported Azure resource has a nested object with properties:
+The `prefix` output is an entire instantiated module object from `Azure/naming/azurerm`, not just a string. This means that the `prefix` output has properties for each [Azure Resource type](https://github.com/Azure/terraform-azurerm-naming/blob/master/README.md#outputs). Each resource (e.g. `.prefix.app_service`) is an object with additional properties for that Azure Resource type:
 
 | Property       | Description |
 |----------------|-------------|
