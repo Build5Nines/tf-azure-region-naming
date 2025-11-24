@@ -1,8 +1,8 @@
 # Azure Naming
 
-> Consistent, location‑aware, environment‑aware Azure resource naming built on top of the official Microsoft [Azure/naming/azurerm](https://github.com/Azure/terraform-azurerm-naming) module.
-
 [![Unit Tests](https://github.com/Build5Nines/terraform-azurerm-region-naming/actions/workflows/unit-tests.yaml/badge.svg)](https://github.com/Build5Nines/terraform-azurerm-region-naming/actions/workflows/unit-tests.yaml)
+![azurerm: supported](https://img.shields.io/badge/azurerm-supported-blue)
+![azapi: supported](https://img.shields.io/badge/azapi-supported-blue)
 
 This Terraform module standardizes Azure resource names by composing an opinionated suffix that includes:
 
@@ -11,6 +11,8 @@ This Terraform module standardizes Azure resource names by composing an opiniona
 * Environment
 
 It then passes that suffix to the upstream Azure naming module so you can access every supported Azure resource name through a single exported `resources` object.
+
+> Consistent, location‑aware, environment‑aware Azure resource naming built on top of the official Microsoft [Azure/naming/azurerm](https://github.com/Azure/terraform-azurerm-naming) module.
 
 ---
 ## Highlights
