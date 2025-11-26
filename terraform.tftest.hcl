@@ -12,8 +12,8 @@ run "basic-westus" {
   command = plan
 
   variables {
-    location     = "West US"
-    name_suffix  = ["{loc}"]
+    location    = "West US"
+    name_suffix = ["{loc}"]
   }
 
   assert {
