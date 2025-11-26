@@ -45,6 +45,19 @@ locals {
       "{loc}", try(local.location_abbr[local.location_canonical], try(local.location_abbr[var.location], local.location_canonical))
     )
   ]
+
+  name_prefix = [for part in var.name_prefix :
+    replace(
+      replace(
+        replace(
+          part,
+          "{org}", var.organization
+        ),
+        "{env}", var.environment
+      ),
+      "{loc}", try(local.location_abbr[local.location_canonical], try(local.location_abbr[var.location], local.location_canonical))
+    )
+  ]
 }
 
 # Azure Naming Module
@@ -52,4 +65,5 @@ locals {
 module "azure_naming" {
   source = "Azure/naming/azurerm"
   suffix = local.name_suffix
+  prefix = local.name_prefix
 }

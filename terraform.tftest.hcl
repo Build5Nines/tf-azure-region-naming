@@ -124,6 +124,23 @@ run "custom-pattern-with-ending-name" {
   }
 }
 
+run "custom-pattern-prefix-with-ending-name" {
+  command = plan
+
+  variables {
+    organization = "acme"
+    environment  = "dev"
+    location     = "North Central US"
+    name_suffix  = []
+    name_prefix  = ["{env}", "{org}", "{loc}", "data"]
+  }
+
+  assert {
+    condition     = output.resources.resource_group.name == "dev-acme-ncus-data-rg"
+    error_message = "resource_group_name did not match expected"
+  }
+}
+
 // No organization - only environment and location
 run "no-organization-01" {
   command = plan
