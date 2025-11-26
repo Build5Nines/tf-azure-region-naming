@@ -165,6 +165,12 @@ variable "name_suffix" {
   default     = ["{org}", "{loc}", "{env}"]
 }
 
+variable "name_prefix" {
+  description = "The pattern to use for the name prefix in Azure resource names. This can include placeholders for organization, environment, and location."
+  type        = list(string)
+  default     = []
+}
+
 variable "location_abbreviations" {
   description = <<EOT
 Optional map of region -> abbreviation overrides. Use this to provide custom or alternate

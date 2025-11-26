@@ -14,6 +14,11 @@ output "base_suffix" {
   value       = local.name_suffix
 }
 
+output "base_prefix" {
+  description = "The base prefix for Azure resource names based on the organization and environment."
+  value       = local.name_prefix
+}
+
 output "resources" {
   description = "The Azure resources with names that match the naming convention defined."
   value       = module.azure_naming

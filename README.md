@@ -70,8 +70,8 @@ resource "azurerm_sql_server" "sql_data" {
 
 Resulting resources will be named (example):
 ```
-Storage Account = stb59eusprodfiles
-SQL Server      = sql-b59-eus-prod-data
+Azure Storage Account = stb59eusprodfiles
+Azure SQL Server      = sql-b59-eus-prod-data
 ```
 
 If you're looking for some more practical example usages of this module, check out the following:
@@ -131,7 +131,7 @@ module "azure_secondary" {
 ```
 
 ---
-## Customizing the Suffix Pattern
+## Customizing the Suffix Naming Pattern
 
 The default suffix is equivalent to the pattern array:
 
@@ -149,6 +149,47 @@ module "azure_primary" {
     location      = "westeurope"
     name_suffix   = ["{org}", "{env}", "{loc}"] # b59-dev-weu
 }
+```
+
+## Customizing the Prefix Naming Pattern
+
+The default prefix is empty, so if you want to use the prefix patter instead of the suffix pattern you'll need to set the input variables for what you need.
+
+Here's an example of using a Prefix Naming Pattern (via `name_prefix`):
+
+```hcl
+module "azure_primary" {
+    source      = "Build5Nines/naming/azure"
+    organization = "b59"
+    environment  = "prod"
+    location     = "westus"
+    name_prefix =  ["{org}", "{env}", "{loc}"] # b59-dev-wus
+    name_suffix  = []
+}
+
+resource "azurerm_storage_account" "sa" {
+    name                     = module.azure_primary.resources.storage_account.name
+    resource_group_name      = azurerm_resource_group.main.name
+    location                 = module.azure_primary.location
+    account_tier             = "Standard"
+    account_replication_type = "LRS"
+}
+
+resource "azurerm_sql_server" "sql_data" {
+  name                         = "${module.azure_primary.resources.sql_server.name}-data"
+  resource_group_name          = azurerm_resource_group.main.name
+  location                     = azurerm_resource_group.main.location
+  version                      = "12.0"
+  administrator_login          = "dataadministrator"
+  administrator_login_password = "b59isawesome"
+}
+```
+
+In this example of using a Prefix Naming Pattern, the Azure resource names will be set to:
+
+```
+Azure Storage Account = b59devwussa
+Azure SQL Server      = b59-dev-wus-sql-data
 ```
 
 ## Customizing the Azure Region / Location Abbreviations
@@ -194,6 +235,7 @@ By default, the module will lookup the Microsoft Region Pair to return for the `
 | `organization` | Organization / business unit segment. | string | "" | yes* |
 | `environment` | Environment segment (dev, test, prod, etc.). | string | "" | yes* |
 | `location` | Azure region (display or programmatic). | string | n/a | yes |
+| `name_prefix` | Ordered list of pattern tokens / literals forming the prefix. Tokens: `{org}`, `{loc}`, `{env}`. | list(string) | `[] | no |
 | `name_suffix` | Ordered list of pattern tokens / literals forming the suffix. Tokens: `{org}`, `{loc}`, `{env}`. | list(string) | `["{org}", "{loc}", "{env}"]` | no |
 | `location_abbreviations` | Map of region -> abbreviation overrides (display or programmatic keys). | map(string) | `{}` | no |
 | `location_secondary` | Optional override for the secondary region. When set (non-empty), the `location_secondary` output will equal this value instead of the computed Microsoft regional pair. | string | "" | no |

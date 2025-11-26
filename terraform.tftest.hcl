@@ -8,6 +8,20 @@ test {
   parallel = true
 }
 
+run "basic-westus" {
+  command = plan
+
+  variables {
+    location    = "West US"
+    name_suffix = ["{loc}"]
+  }
+
+  assert {
+    condition     = output.resources.resource_group.name == "rg-wus"
+    error_message = "prefix_resource_group_name did not match expected"
+  }
+}
+
 // Basic East US test
 run "basic-eastus" {
   command = plan
@@ -121,6 +135,23 @@ run "custom-pattern-with-ending-name" {
   assert {
     condition     = output.location_secondary == "southcentralus"
     error_message = "location_secondary did not match expected"
+  }
+}
+
+run "custom-pattern-prefix-with-ending-name" {
+  command = plan
+
+  variables {
+    organization = "acme"
+    environment  = "dev"
+    location     = "North Central US"
+    name_suffix  = []
+    name_prefix  = ["{env}", "{org}", "{loc}", "data"]
+  }
+
+  assert {
+    condition     = output.resources.resource_group.name == "dev-acme-ncus-data-rg"
+    error_message = "resource_group_name did not match expected"
   }
 }
 
