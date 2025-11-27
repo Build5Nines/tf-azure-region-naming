@@ -4,24 +4,26 @@
 ![azurerm: supported](https://img.shields.io/badge/azurerm-supported-blue)
 ![azapi: supported](https://img.shields.io/badge/azapi-supported-blue)
 
-This Terraform module standardizes Azure resource names by composing an opinionated suffix that includes:
+Stop wasting time manually crafting Azure resource names and eliminate naming inconsistencies across your infrastructure. This Terraform module automates your entire Azure naming convention, ensuring every resource—from resource groups to storage accounts to key vaults—follows your organizational standards automatically.
 
-* Organization
-* Region abbreviation (canonical + overridable)
-* Environment
+**What you get:**
+* **Instant productivity**: Define your convention once, apply it everywhere—across all 70+ Azure resource types and Azure Regions!
+* **Zero errors**: No more typos, forgotten abbreviations, or inconsistent patterns
+* **Multi-region made simple**: Deploy to multiple Azure Regions with automatic location-aware naming
+* **Multi-Provider flexibility**: Supports both the `azurerm` and `azapi` Azure providers for Terraform for maximum flexibility of adhering to your naming convention
+* **Team alignment**: Everyone on your team uses the same naming standard without thinking about it
+* **Proven foundation**: This module is built on and extends Microsoft's official [Azure/naming/azurerm](https://github.com/Azure/terraform-azurerm-naming) module
 
-It then passes that suffix to the upstream Azure naming module so you can access every supported Azure resource name through a single exported `resources` object.
-
-> Consistent, location‑aware, environment‑aware Azure resource naming built on top of the official Microsoft [Azure/naming/azurerm](https://github.com/Azure/terraform-azurerm-naming) module.
+> Transform hours of naming decisions into seconds with a consistent, location‑aware, environment‑aware Microsoft Azure resource naming convention.
 
 ---
 ## Highlights
-* Accepts either display region names (e.g. `East US`) or programmatic names (`eastus`).
-* Validates regions against an explicit allow list.
-* Data‑driven abbreviations via `data/region_abbr.json` (overrideable per region).
-* Region pairing / canonicalization via `data/region_pair.json` (exposed as `location_secondary`).
-* Flexible suffix pattern using placeholder tokens: `{org}`, `{loc}`, `{env}`.
-* Full access to all Azure resource naming outputs provided by `Azure/naming/azurerm`.
+* **Eliminate naming inconsistencies** across your Azure infrastructure with a single, reusable module.
+* **Save time and reduce errors** by automating complex naming conventions instead of manually crafting names.
+* **Manage multi-region architectures more easily** with built-in region pairing and location-aware naming.
+* **Maintain compliance** with organizational standards through consistent naming patterns across all environments.
+* **Access 70+ Azure resource types** with proper abbreviations and constraints—all from one unified interface.
+* **Scale your infrastructure** confidently knowing every resource follows your defined naming convention.
 
 ---
 ## Quick Start
